@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>TagBridge</title>
+    <script src="https://code.angularjs.org/1.4.6/angular.min.js"></script>
+  </head>
+  <body ng-app="myApp">
+    <h1>Discovered SensorTags</h1>
+    <div id="controller" ng-controller="myController">
+      <div ng-repeat="tag in tags">
+        <span>{{tag}}</span>
+        <button ng-click="connect(tag);">Connect</button>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      const $ = require('./lib/jquery');
+      const ipc = require('electron').ipcRenderer;
+
+      var TAGS = [];
+
+      ipc.on("discovered", function(_, id){
+        console.log("receive discovered", id);
+        TAGS.push(id);
+        angular.element(document.getElementById("controller")).scope().$apply(function(){});
+      });
+
+      /* Angular */
+
+      var app = angular.module('myApp', []);
+
+      app.controller('myController', ['$scope', function($scope){
+        $scope.tags = TAGS;
+
+        $scope.connect = function(tag){
+          ipc.send('connect', tag);
+        };
+      }]);
+
+      ipc.send('go');
+    </script>
+  </body>
+</html>

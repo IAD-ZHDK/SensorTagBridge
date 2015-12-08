@@ -1,0 +1,14 @@
+{
+  "name": "sensortag-test",
+  "version": "0.1.0",
+  "main": "app.js",
+  "scripts": {
+    "run": "./node_modules/.bin/electron ."
+  },
+  "dependencies": {
+    "electron-prebuilt": "^0.35.4",
+    "electron-rebuild": "^1.0.2",
+    "node-osc": "^1.1.0",
+    "sensortag": "^1.2.0"
+  }
+}
