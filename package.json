@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "app.js",
   "scripts": {
+    "rebuild": "./node_modules/.bin/electron-rebuild",
     "run": "./node_modules/.bin/electron ."
   },
   "dependencies": {
