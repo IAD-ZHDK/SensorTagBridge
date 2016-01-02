@@ -186,7 +186,7 @@ app.on('ready', function() {
 
     if (luxoConnected) {
       tag.on('luxometerChange', function (lux) {
-        client.send('/luxometer', lux);
+        client.send('/luxometer', (float)lux);
       });
     }
 
@@ -198,7 +198,7 @@ app.on('ready', function() {
     if (keysConnected) {
       tag.notifySimpleKey(function(error){console.log(error);});
       tag.on('simpleKeyChange', function (left, right, reedRelay) {
-        client.send('/buttons', left, right, reedRelay);
+        client.send('/buttons', left.toNumber(), right.toNumber(), reedRelay.toNumber());
       });
     } else {
       tag.unnotifySimpleKey(function(error){console.log(error);});

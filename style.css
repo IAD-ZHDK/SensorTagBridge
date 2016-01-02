@@ -8,6 +8,10 @@ h1 {
     text-align: center;
 }
 
+.center {
+    text-align: center;
+}
+
 #content{
     border:1px solid #0d292b;
     padding: 2px;

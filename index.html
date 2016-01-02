@@ -18,6 +18,9 @@
       <li>Sensor Data can be recieved via OSC on port <b>6006</b></li>
       <li>When done do not forget to disconnect the Sensortag (Otherwise you have to remove the battery and insert it again after 2 secs)</li>
     </ul>
+    <div class="center">
+      https://github.com/IAD-ZHDK/SensorTagBridge
+    </div>
   </div>
   <div id="content">
     <h3>Discovered SensorTags: </h3>
@@ -40,7 +43,6 @@
     </div>
   </div>
   <div id="footer">
-    <a href="http://www.github.com/"
   </div>
 
     <script type="text/javascript">
@@ -115,6 +117,7 @@
         };
 
 
+        // TODO: After enabling, disabling and enabling again the values are sent twice.. why??
         $scope.notifyAccelerometer = function() {
           $scope.accConnected = !$scope.accConnected;
           ipc.send('notifyAccelerometer', $scope.accConnected);
