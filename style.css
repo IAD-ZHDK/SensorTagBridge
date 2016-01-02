@@ -1,0 +1,85 @@
+body{
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #035271;
+    color: #061112;
+}
+
+h1 {
+    text-align: center;
+}
+
+#content{
+    border:1px solid #0d292b;
+    padding: 2px;
+}
+
+.connectButton {
+    background-color:#194e56;
+    border:1px solid #0d292b;
+    display:inline-block;
+    cursor:pointer;
+    color:#000000;
+    font-size:13px;
+    padding:6px 12px;
+    margin-left: 5px;
+    text-decoration:none;
+}
+
+.enableSensorButton {
+    background-color:#297d85;
+    border:1px solid #0d292b;
+    display:inline-block;
+    cursor:pointer;
+    color:#000000;
+    font-size:13px;
+    padding:6px 12px;
+    margin: 5px;
+    text-decoration:none;
+}
+
+.connButtons{
+    visibility: hidden;
+    display: none;
+}
+
+.sensorButtons{
+    border:1px solid #0d292b;
+    padding: 5px;
+    margin: 2px;
+}
+
+.tagListElement{
+    display:inline-block;
+    border:1px solid #0d292b;
+    padding: 5px;
+    margin: 2px;
+}
+
+.connectButton:hover {
+    background-color:#297d85;
+}
+.connectButton:active {
+    position:relative;
+    top:1px;
+}
+
+.enableSensorButton:hover {
+    background-color:#297d85;
+}
+.enableSensorButton:active {
+    position:relative;
+    top:1px;
+}
+
+.connectButton:disabled {
+    background: #5a7e83;
+    color: #394f54;
+}
+
+.buttonActive{
+    background-color: #194e56;
+}
+
+.theConnectButton{
+    background-color: #297d85;
+}
