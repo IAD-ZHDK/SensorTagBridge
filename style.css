@@ -24,6 +24,7 @@ h1 {
 
 #content{
     padding-left: 30px;
+    padding-right: 30px;
     padding-bottom:40px;
 }
 
@@ -61,7 +62,7 @@ h1 {
     color:#000000;
     font-size:13px;
     padding:6px 12px;
-    margin: 5px;
+    margin: 2px;
     text-decoration:none;
 }
 
