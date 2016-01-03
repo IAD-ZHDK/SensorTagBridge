@@ -45,34 +45,34 @@ app.on('ready', function() {
       // Attach to events on discovery as removing events is  not possible
       // So we only can do this once otherwise we`ll get multiple responses.
       tag.on('accelerometerChange', function(x, y, z) {
-        client.send('/accelerometer', x, y, z);
+        client.send('/accelerometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
         //accConnected = true;
       });
 
       tag.on('gyroscopeChange', function(x, y, z) {
-        client.send('/gyroscope', x, y, z);
+        client.send('/gyroscope', x.toFixed(4), y.toFixed(4), z.toFixed(4));
         //  console.log(x, y, z);
       });
 
       tag.on('magnetometerChange', function(x, y, z) {
-        client.send('/magnetometer', x, y, z);
+        client.send('/magnetometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
         //  console.log(x, y, z);
       });
 
       tag.on('irTemperatureChange', function (objectTemperature, ambientTemperature) {
-        client.send('/IrTemperature', objectTemperature, ambientTemperature);
+        client.send('/IrTemperature', objectTemperature.toFixed(4), ambientTemperature.toFixed(4));
       });
 
       tag.on('humidityChange', function (temperature, humidity) {
-        client.send('/humidity', temperature, humidity);
+        client.send('/humidity', temperature.toFixed(4), humidity.toFixed(4));
       });
 
       tag.on('barometricPressureChange', function (pressure) {
-        client.send('/pressure', pressure);
+        client.send('/pressure', pressure.toFixed(4));
       });
 
       tag.on('luxometerChange', function (lux) {
-        client.send('/luxometer', lux);
+        client.send('/luxometer', lux.toFixed(4));
       });
 
       tag.on('simpleKeyChange', function (left, right, reedRelay) {
