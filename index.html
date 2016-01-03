@@ -9,206 +9,209 @@
     <link href="style.css" rel="stylesheet" type="text/css">
   </head>
   <body ng-app="myApp">
-  <div id="header">
-    <h1>SensorTag to OSC Bridge</h1>
-    <ul>
-      <li>Enable your Sensortag</li>
-      <li>Press the Connect button next to your Sensortag</li>
-      <li>Enable the sensors you need</li>
-      <li>Sensor Data can be recieved via OSC on port <b>6006</b></li>
-      <li>When done do not forget to disconnect the Sensortag (Otherwise you have to remove the battery and insert it again after 2 secs)</li>
-    </ul>
-    <div class="center">
-      https://github.com/IAD-ZHDK/SensorTagBridge
-    </div>
-  </div>
-  <div id="content">
-    <h3>Discovered SensorTags: </h3>
-    <div id="controller" ng-controller="myController">
-      <div ng-repeat="tag in tags" class="tagListElement">
-        <span>{{tag.tagId}}</span>
-        <button ng-click="connect(tag);" class="connectButton" ng-class="{'theConnectButton' : tag.notConnected}" type="button" ng-disabled="tag.notConnected && !tagNotConnected">{{tag.buttonText}}</button>
-        <br>
+    <div id="wrapper">
+      <div id="header">
+        <h1>SensorTag to OSC Bridge</h1>
+        <ul>
+          <li>Enable your Sensortag</li>
+          <li>Press the Connect button next to your Sensortag</li>
+          <li>Enable the sensors you need</li>
+          <li>Sensor Data can be recieved via OSC on port <b>6006</b></li>
+          <li>When done do not forget to disconnect the Sensortag <br>(Otherwise you have to remove the battery and insert it again after 2 secs)</li>
+        </ul>
       </div>
-      <div id="connectorButtons" ng-model="connBut" class="sensorButtons" ng-class="{'connButtons' : hideSensorButtons}">
-        <button ng-click="notifyAccelerometer()" class="enableSensorButton" ng-class="{'buttonActive': accConnected}" type="button">{{AccelerometerButtonText}}</button>
-        <button ng-click="notifyGyroscope()" class="enableSensorButton" ng-class="{'buttonActive': gyroConnected}" type="button">{{GyroscopeButtonText}}</button>
-        <button ng-click="notifyMagnetometer()" class="enableSensorButton" ng-class="{'buttonActive': magnetometerConnected}" type="button">{{MagnetometerButtonText}}</button>
-        <button ng-click="notifyTemp()" class="enableSensorButton" ng-class="{'buttonActive': irTempConnected}" type="button">{{IrTemperatureButtonText}}</button>
-        <button ng-click="notifyHumidity()" class="enableSensorButton" ng-class="{'buttonActive': humidityConnected}" type="button">{{HumidityButtonText}}</button>
-        <button ng-click="notifyPressure()" class="enableSensorButton" ng-class="{'buttonActive': pressureConnected}" type="button">{{PressureButtonText}}</button>
-        <button ng-click="notifyLuxometer()" class="enableSensorButton" ng-class="{'buttonActive': luxometerConnected}" type="button">{{LuxometerButtonText}}</button>
-        <button ng-click="notifySimpleKey()" class="enableSensorButton" ng-class="{'buttonActive': simpleKeysConnected}" type="button">{{SimpleKeysButtonText}}</button>
+      <div id="content">
+        <h3>Discovered SensorTags: </h3>
+        <div id="controller" ng-controller="myController">
+          <div ng-repeat="tag in tags" class="tagListElement">
+            <span>{{tag.tagId}}</span>
+            <button ng-click="connect(tag);" class="connectButton" ng-class="{'theConnectButton' : tag.notConnected}" type="button" ng-disabled="tag.notConnected && !tagNotConnected">{{tag.buttonText}}</button>
+            <br>
+          </div>
+          <div id="connectorButtons" ng-model="connBut" class="sensorButtons" ng-class="{'connButtons' : hideSensorButtons}">
+            <button ng-click="notifyAccelerometer()" class="enableSensorButton" ng-class="{'buttonActive': accConnected}" type="button">{{AccelerometerButtonText}}</button>
+            <button ng-click="notifyGyroscope()" class="enableSensorButton" ng-class="{'buttonActive': gyroConnected}" type="button">{{GyroscopeButtonText}}</button>
+            <button ng-click="notifyMagnetometer()" class="enableSensorButton" ng-class="{'buttonActive': magnetometerConnected}" type="button">{{MagnetometerButtonText}}</button>
+            <button ng-click="notifyTemp()" class="enableSensorButton" ng-class="{'buttonActive': irTempConnected}" type="button">{{IrTemperatureButtonText}}</button>
+            <button ng-click="notifyHumidity()" class="enableSensorButton" ng-class="{'buttonActive': humidityConnected}" type="button">{{HumidityButtonText}}</button>
+            <button ng-click="notifyPressure()" class="enableSensorButton" ng-class="{'buttonActive': pressureConnected}" type="button">{{PressureButtonText}}</button>
+            <button ng-click="notifyLuxometer()" class="enableSensorButton" ng-class="{'buttonActive': luxometerConnected}" type="button">{{LuxometerButtonText}}</button>
+            <button ng-click="notifySimpleKey()" class="enableSensorButton" ng-class="{'buttonActive': simpleKeysConnected}" type="button">{{SimpleKeysButtonText}}</button>
+          </div>
+        </div>
       </div>
+      <div id="footer">
+        <div class="center">
+          https://github.com/IAD-ZHDK/SensorTagBridge <br>
+          https://github.com/IAD-ZHDK/SonicInteractionDesignHS2015
+        </div>
+      </div>
+
+      <script type="text/javascript">
+        const $ = require('./lib/jquery');
+        const ipc = require('electron').ipcRenderer;
+
+        var TAGS = [];
+
+        //var tagNotConnected = true;
+        //var connectButtonText = "Connect";
+
+        ipc.on("discovered", function(_, id){
+          console.log("receive discovered", id);
+          var onetag = {tagId:id, notConnected:true, buttonText:"Connect", buttonEnabled:true};
+          TAGS.push(onetag);
+          angular.element(document.getElementById("controller")).scope().$apply(function(){});
+        });
+
+        ipc.on("connected", function(){
+          angular.element(document.getElementById("controller")).scope().hideSensorButtons = false;
+          angular.element(document.getElementById("controller")).scope().$apply(function(){});
+          //thebuttons.element.sendKeys
+          //angular.expect(thebuttons.first().getAttribute('class')).toMatch(/bold/);
+          //angular.element.by.model("connBut").sendKeys('connectSensorButtons');
+        });
+
+        /* Angular */
+
+        var app = angular.module('myApp', ['toggle-switch']);
+
+        app.controller('myController', ['$scope', function($scope){
+          $scope.tags = TAGS;
+          $scope.hideSensorButtons = true;
+          $scope.connectButtonText = "Connect";
+          $scope.AccelerometerButtonText = "Enable Accelerometer";
+          $scope.GyroscopeButtonText = "Enable Gyroscope";
+          $scope.MagnetometerButtonText = "Enable Magnetometer";
+          $scope.IrTemperatureButtonText = "Enable Ir Temperature Sensor";
+          $scope.HumidityButtonText = "Enable Humidity Sensor";
+          $scope.PressureButtonText = "Enable Barometric Pressure Sensor";
+          $scope.LuxometerButtonText = "Enable Luxometer";
+          $scope.SimpleKeysButtonText = "Enable SimpleKeys Service";
+
+          $scope.tagNotConnected = true;
+          $scope.accConnected = false;
+          $scope.gyroConnected = false;
+          $scope.magnetometerConnected = false;
+          $scope.irTempConnected = false;
+          $scope.humidityConnected = false;
+          $scope.pressureConnected = false;
+          $scope.luxometerConnected = false;
+          $scope.simpleKeysConnected = false;
+
+          $scope.connect = function(tag){
+            if ($scope.tagNotConnected) {
+              ipc.send('connect', tag.tagId);
+              tag.notConnected = false;
+              $scope.tagNotConnected = false;
+              tag.buttonText = "Disconnect";
+              //$scope.connectButtonText = "Disconnect SensorTag";
+              console.log("Tag Connected");
+            } else {
+              ipc.send('disconnect');
+              tag.notConnected = true;
+              tag.buttonText = "Connect";
+              //$scope.connectButtonText = "Connect to SensorTag";
+              $scope.tagNotConnected = true;
+              $scope.hideSensorButtons = true;
+              console.log("Tag Disconnected");
+            }
+            //$scope.tagNotConnected = !$scope.tagNotConnected;
+          };
+
+
+          // TODO: After enabling, disabling and enabling again the values are sent twice.. why??
+          $scope.notifyAccelerometer = function() {
+            $scope.accConnected = !$scope.accConnected;
+            ipc.send('notifyAccelerometer', $scope.accConnected);
+            console.log("Accelerometer Notifications: "+$scope.accConnected);
+            if ($scope.accConnected) {
+              $scope.AccelerometerButtonText = "Disable Accelerometer";
+            } else {
+              $scope.AccelerometerButtonText = "Enable Accelerometer";
+            }
+          };
+
+          $scope.notifyGyroscope = function() {
+            $scope.gyroConnected = !$scope.gyroConnected;
+            ipc.send('notifyGyroscope', $scope.gyroConnected);
+            console.log("Gyroscope Notifications: "+$scope.gyroConnected);
+            if ($scope.gyroConnected) {
+              $scope.GyroscopeButtonText = "Disable Gyroscope";
+            } else {
+              $scope.GyroscopeButtonText = "Enable Gyroscope";
+            }
+          };
+
+          $scope.notifyMagnetometer = function() {
+            $scope.magnetometerConnected = !$scope.magnetometerConnected;
+            ipc.send('notifyMagnetometer', $scope.magnetometerConnected);
+            console.log("Magnetometer Notifications: "+$scope.magnetometerConnected);
+            if ($scope.magnetometerConnected) {
+              $scope.MagnetometerButtonText = "Disable Magnetometer";
+            } else {
+              $scope.MagnetometerButtonText = "Enable Magnetometer";
+            }
+          };
+
+          $scope.notifyTemp = function() {
+            $scope.irTempConnected = !$scope.irTempConnected;
+            ipc.send('notifyTemp', $scope.irTempConnected);
+            console.log("IR Temperature Notifications: "+$scope.irTempConnected);
+            if ($scope.irTempConnected) {
+              $scope.IrTemperatureButtonText = "Disable Ir Temperature Sensor";
+            } else {
+              $scope.IrTemperatureButtonText = "Enable Ir Temperature Sensor";
+            }
+          };
+
+          $scope.notifyHumidity = function() {
+            $scope.humidityConnected = !$scope.humidityConnected;
+            ipc.send('notifyHumidity', $scope.humidityConnected);
+            console.log("Humidity Notifications: "+$scope.humidityConnected);
+            if ($scope.humidityConnected) {
+              $scope.HumidityButtonText = "Disable Humidity Sensor";
+            } else {
+              $scope.HumidityButtonText = "Enable Humidity Sensor";
+            }
+          };
+
+          $scope.notifyPressure = function() {
+            $scope.pressureConnected = !$scope.pressureConnected;
+            ipc.send('notifyPressure', $scope.pressureConnected);
+            console.log("Barometric Pressure Notifications: "+$scope.pressureConnected);
+            if ($scope.pressureConnected) {
+              $scope.PressureButtonText = "Disable Barometric Pressure Sensor";
+            } else {
+              $scope.PressureButtonText = "Enable Barometric Pressure Sensor";
+            }
+          };
+
+          $scope.notifyLuxometer = function() {
+            $scope.luxometerConnected = !$scope.luxometerConnected;
+            ipc.send('notifyLuxometer', $scope.luxometerConnected);
+            console.log("Luxometer Notifications: "+$scope.luxometerConnected);
+            if ($scope.luxometerConnected) {
+              $scope.LuxometerButtonText = "Disable Luxometer";
+            } else {
+              $scope.LuxometerButtonText = "Enable Luxometer";
+            }
+          };
+
+          $scope.notifySimpleKey = function() {
+            $scope.simpleKeysConnected = !$scope.simpleKeysConnected;
+            ipc.send('notifySimpleKey', $scope.simpleKeysConnected);
+            console.log("SimpleKey Notifications: "+$scope.simpleKeysConnected);
+            if ($scope.simpleKeysConnected) {
+              $scope.SimpleKeysButtonText = "Disable SimpleKeys Service";
+            } else {
+              $scope.SimpleKeysButtonText = "Enable SimpleKeys Service";
+            }
+          };
+
+        }]);
+
+        ipc.send('go');
+      </script>
     </div>
-  </div>
-  <div id="footer">
-  </div>
-
-    <script type="text/javascript">
-      const $ = require('./lib/jquery');
-      const ipc = require('electron').ipcRenderer;
-
-      var TAGS = [];
-
-      //var tagNotConnected = true;
-      //var connectButtonText = "Connect";
-
-      ipc.on("discovered", function(_, id){
-        console.log("receive discovered", id);
-        var onetag = {tagId:id, notConnected:true, buttonText:"Connect", buttonEnabled:true};
-        TAGS.push(onetag);
-        angular.element(document.getElementById("controller")).scope().$apply(function(){});
-      });
-
-      ipc.on("connected", function(){
-        angular.element(document.getElementById("controller")).scope().hideSensorButtons = false;
-        angular.element(document.getElementById("controller")).scope().$apply(function(){});
-        //thebuttons.element.sendKeys
-        //angular.expect(thebuttons.first().getAttribute('class')).toMatch(/bold/);
-        //angular.element.by.model("connBut").sendKeys('connectSensorButtons');
-      });
-
-      /* Angular */
-
-      var app = angular.module('myApp', ['toggle-switch']);
-
-      app.controller('myController', ['$scope', function($scope){
-        $scope.tags = TAGS;
-        $scope.hideSensorButtons = true;
-        $scope.connectButtonText = "Connect";
-        $scope.AccelerometerButtonText = "Enable Accelerometer";
-        $scope.GyroscopeButtonText = "Enable Gyroscope";
-        $scope.MagnetometerButtonText = "Enable Magnetometer";
-        $scope.IrTemperatureButtonText = "Enable Ir Temperature Sensor";
-        $scope.HumidityButtonText = "Enable Humidity Sensor";
-        $scope.PressureButtonText = "Enable Barometric Pressure Sensor";
-        $scope.LuxometerButtonText = "Enable Luxometer";
-        $scope.SimpleKeysButtonText = "Enable SimpleKeys Service";
-
-        $scope.tagNotConnected = true;
-        $scope.accConnected = false;
-        $scope.gyroConnected = false;
-        $scope.magnetometerConnected = false;
-        $scope.irTempConnected = false;
-        $scope.humidityConnected = false;
-        $scope.pressureConnected = false;
-        $scope.luxometerConnected = false;
-        $scope.simpleKeysConnected = false;
-
-        $scope.connect = function(tag){
-          if ($scope.tagNotConnected) {
-            ipc.send('connect', tag.tagId);
-            tag.notConnected = false;
-            $scope.tagNotConnected = false;
-            tag.buttonText = "Disconnect";
-            //$scope.connectButtonText = "Disconnect SensorTag";
-            console.log("Tag Connected");
-          } else {
-            ipc.send('disconnect');
-            tag.notConnected = true;
-            tag.buttonText = "Connect";
-            //$scope.connectButtonText = "Connect to SensorTag";
-            $scope.tagNotConnected = true;
-            $scope.hideSensorButtons = true;
-            console.log("Tag Disconnected");
-          }
-          //$scope.tagNotConnected = !$scope.tagNotConnected;
-        };
-
-
-        // TODO: After enabling, disabling and enabling again the values are sent twice.. why??
-        $scope.notifyAccelerometer = function() {
-          $scope.accConnected = !$scope.accConnected;
-          ipc.send('notifyAccelerometer', $scope.accConnected);
-          console.log("Accelerometer Notifications: "+$scope.accConnected);
-          if ($scope.accConnected) {
-            $scope.AccelerometerButtonText = "Disable Accelerometer";
-          } else {
-            $scope.AccelerometerButtonText = "Enable Accelerometer";
-          }
-        };
-
-        $scope.notifyGyroscope = function() {
-          $scope.gyroConnected = !$scope.gyroConnected;
-          ipc.send('notifyGyroscope', $scope.gyroConnected);
-          console.log("Gyroscope Notifications: "+$scope.gyroConnected);
-          if ($scope.gyroConnected) {
-            $scope.GyroscopeButtonText = "Disable Gyroscope";
-          } else {
-            $scope.GyroscopeButtonText = "Enable Gyroscope";
-          }
-        };
-
-        $scope.notifyMagnetometer = function() {
-          $scope.magnetometerConnected = !$scope.magnetometerConnected;
-          ipc.send('notifyMagnetometer', $scope.magnetometerConnected);
-          console.log("Magnetometer Notifications: "+$scope.magnetometerConnected);
-          if ($scope.magnetometerConnected) {
-            $scope.MagnetometerButtonText = "Disable Magnetometer";
-          } else {
-            $scope.MagnetometerButtonText = "Enable Magnetometer";
-          }
-        };
-
-        $scope.notifyTemp = function() {
-          $scope.irTempConnected = !$scope.irTempConnected;
-          ipc.send('notifyTemp', $scope.irTempConnected);
-          console.log("IR Temperature Notifications: "+$scope.irTempConnected);
-          if ($scope.irTempConnected) {
-            $scope.IrTemperatureButtonText = "Disable Ir Temperature Sensor";
-          } else {
-            $scope.IrTemperatureButtonText = "Enable Ir Temperature Sensor";
-          }
-        };
-
-        $scope.notifyHumidity = function() {
-          $scope.humidityConnected = !$scope.humidityConnected;
-          ipc.send('notifyHumidity', $scope.humidityConnected);
-          console.log("Humidity Notifications: "+$scope.humidityConnected);
-          if ($scope.humidityConnected) {
-            $scope.HumidityButtonText = "Disable Humidity Sensor";
-          } else {
-            $scope.HumidityButtonText = "Enable Humidity Sensor";
-          }
-        };
-
-        $scope.notifyPressure = function() {
-          $scope.pressureConnected = !$scope.pressureConnected;
-          ipc.send('notifyPressure', $scope.pressureConnected);
-          console.log("Barometric Pressure Notifications: "+$scope.pressureConnected);
-          if ($scope.pressureConnected) {
-            $scope.PressureButtonText = "Disable Barometric Pressure Sensor";
-          } else {
-            $scope.PressureButtonText = "Enable Barometric Pressure Sensor";
-          }
-        };
-
-        $scope.notifyLuxometer = function() {
-          $scope.luxometerConnected = !$scope.luxometerConnected;
-          ipc.send('notifyLuxometer', $scope.luxometerConnected);
-          console.log("Luxometer Notifications: "+$scope.luxometerConnected);
-          if ($scope.luxometerConnected) {
-            $scope.LuxometerButtonText = "Disable Luxometer";
-          } else {
-            $scope.LuxometerButtonText = "Enable Luxometer";
-          }
-        };
-
-        $scope.notifySimpleKey = function() {
-          $scope.simpleKeysConnected = !$scope.simpleKeysConnected;
-          ipc.send('notifySimpleKey', $scope.simpleKeysConnected);
-          console.log("SimpleKey Notifications: "+$scope.simpleKeysConnected);
-          if ($scope.simpleKeysConnected) {
-            $scope.SimpleKeysButtonText = "Disable SimpleKeys Service";
-          } else {
-            $scope.SimpleKeysButtonText = "Enable SimpleKeys Service";
-          }
-        };
-
-      }]);
-
-      ipc.send('go');
-    </script>
   </body>
 </html>
