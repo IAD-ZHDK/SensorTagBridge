@@ -42,8 +42,7 @@ app.on('ready', function() {
       console.log("send discovered", tag.id);
       TAGS[tag.id] = tag;
 
-      // Attach to events on discovery as removing events is  not possible
-      // So we only can do this once otherwise we`ll get multiple responses.
+      /*
       tag.on('accelerometerChange', function(x, y, z) {
         client.send('/accelerometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
         //accConnected = true;
@@ -78,6 +77,7 @@ app.on('ready', function() {
       tag.on('simpleKeyChange', function (left, right, reedRelay) {
         client.send('/buttons', left.toNumber(), right.toNumber(), reedRelay.toNumber());
       });
+      */
 
       mainWindow.webContents.send('discovered', tag.id);
     });
@@ -113,10 +113,15 @@ app.on('ready', function() {
       tag.enableAccelerometer(function(error){console.log(error);});
       tag.notifyAccelerometer(function(error){console.log(error);});
       tag.setAccelerometerPeriod(100, function(error){console.log(error);});
+      tag.on('accelerometerChange', function(x, y, z) {
+        client.send('/accelerometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
+        //accConnected = true;
+      });
     } else {
       // remove event handler
       tag.disableAccelerometer(function(error){console.log(error);});
       tag.unnotifyAccelerometer(function(error){console.log(error);});
+      tag.removeAllListeners('accelerometerChange');
     }
   });
 
@@ -127,9 +132,14 @@ app.on('ready', function() {
       tag.enableGyroscope(function(error){console.log(error);});
       tag.notifyGyroscope(function(error){console.log(error);});
       tag.setGyroscopePeriod(100, function(error){console.log(error);});
+      tag.on('gyroscopeChange', function(x, y, z) {
+        client.send('/gyroscope', x.toFixed(4), y.toFixed(4), z.toFixed(4));
+        //  console.log(x, y, z);
+      });
     } else {
       tag.disableGyroscope(function(error){console.log(error);});
       tag.unnotifyGyroscope(function(error){console.log(error);});
+      tag.removeAllListeners('gyroscopeChange');
     }
   });
 
@@ -140,9 +150,14 @@ app.on('ready', function() {
       tag.enableMagnetometer(function(error){console.log(error);});
       tag.notifyMagnetometer(function(error){console.log(error);});
       tag.setMagnetometerPeriod(100, function(error){console.log(error);});
+      tag.on('magnetometerChange', function(x, y, z) {
+        client.send('/magnetometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
+        //  console.log(x, y, z);
+      });
     } else {
       tag.disableMagnetometer(function(error){console.log(error);});
       tag.unnotifyMagnetometer(function(error){console.log(error);});
+      tag.removeAllListeners('magnetometerChange');
     }
   });
 
@@ -153,9 +168,13 @@ app.on('ready', function() {
       tag.enableIrTemperature(function(error){console.log(error);});
       tag.notifyIrTemperature(function(error){console.log(error);});
       tag.setIrTemperaturePeriod(310, function(error){console.log(error);});
+      tag.on('irTemperatureChange', function (objectTemperature, ambientTemperature) {
+        client.send('/IrTemperature', objectTemperature.toFixed(4), ambientTemperature.toFixed(4));
+      });
     } else {
       tag.unnotifyIrTemperature(function(error){console.log(error);});
       tag.disableIrTemperature(function(error){console.log(error);});
+      tag.removeAllListeners('irTemperatureChange');
     }
   });
 
@@ -166,9 +185,13 @@ app.on('ready', function() {
       tag.enableHumidity(function(error){console.log(error);});
       tag.setHumidityPeriod(100, function(error){console.log(error);});
       tag.notifyHumidity(function(error){console.log(error);});
+      tag.on('humidityChange', function (temperature, humidity) {
+        client.send('/humidity', temperature.toFixed(4), humidity.toFixed(4));
+      });
     } else {
       tag.unnotifyHumidity(function(error){console.log(error);});
       tag.disableHumidity(function(error){console.log(error);});
+      tag.removeAllListeners('humidityChange');
     }
   });
 
@@ -179,9 +202,13 @@ app.on('ready', function() {
       tag.enableBarometricPressure(function(error){console.log(error);});
       tag.notifyBarometricPressure(function(error){console.log(error);});
       tag.setBarometricPressurePeriod(100, function(error){console.log(error);});
+      tag.on('barometricPressureChange', function (pressure) {
+        client.send('/pressure', pressure.toFixed(4));
+      });
     } else {
       tag.unnotifyBarometricPressure(function(error){console.log(error);});
       tag.disableBarometricPressure(function(error){console.log(error);});
+      tag.removeAllListeners('barometricPressureChange');
     }
   });
 
@@ -192,9 +219,13 @@ app.on('ready', function() {
       tag.enableLuxometer(function(error){console.log(error);});
       tag.setLuxometerPeriod(100, function(error){console.log(error);});
       tag.notifyLuxometer(function(error){console.log(error);});
+      tag.on('luxometerChange', function (lux) {
+        client.send('/luxometer', lux.toFixed(4));
+      });
     } else {
       tag.unnotifyLuxometer(function(error){console.log(error);});
       tag.disableLuxometer(function(error){console.log(error);});
+      tag.removeAllListeners('luxometerChange');
     }
   });
 
@@ -203,8 +234,12 @@ app.on('ready', function() {
     keysConnected = isEnabled;
     if (keysConnected) {
       tag.notifySimpleKey(function(error){console.log(error);});
+      tag.on('simpleKeyChange', function (left, right, reedRelay) {
+        client.send('/buttons', left.toString(), right.toString(), reedRelay.toString());
+      });
     } else {
       tag.unnotifySimpleKey(function(error){console.log(error);});
+      tag.removeAllListeners('simpleKeyChange');
     }
   });
 
