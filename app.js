@@ -26,10 +26,6 @@ app.on('window-all-closed', function() {
   }
 });
 
-function errorHandler(_error) {
-  console.log(_error);
-}
-
 app.on('ready', function() {
   mainWindow = new BrowserWindow({width: 800, height: 600});
   mainWindow.loadURL('file://' + __dirname + '/index.html');
