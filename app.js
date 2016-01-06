@@ -34,48 +34,25 @@ app.on('ready', function() {
 
   // Discover available SensorTags
   ipc.on('go', function(){
+
     SensorTag.discoverAll(function(tag){
-      console.log("send discovered", tag.id);
+      console.log("send discovered", tag.uuid);
       TAGS[tag.id] = tag;
 
-      /*
-      tag.on('accelerometerChange', function(x, y, z) {
-        client.send('/accelerometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
-        //accConnected = true;
+      //TODO: Is this a good practice to do?
+      tag.connectAndSetup(function(error){
+        if (tag.connectedAndSetUp) {
+          console.log("AAA");
+          tag.readSystemId(function (_, systemID) {
+            console.log("A "+systemID);
+            tag.disconnect(function(error){console.log(error);});
+            mainWindow.webContents.send('discovered', tag.id, systemID);
+          });
+        } else{
+          console.log(error);
+        }
       });
 
-      tag.on('gyroscopeChange', function(x, y, z) {
-        client.send('/gyroscope', x.toFixed(4), y.toFixed(4), z.toFixed(4));
-        //  console.log(x, y, z);
-      });
-
-      tag.on('magnetometerChange', function(x, y, z) {
-        client.send('/magnetometer', x.toFixed(4), y.toFixed(4), z.toFixed(4));
-        //  console.log(x, y, z);
-      });
-
-      tag.on('irTemperatureChange', function (objectTemperature, ambientTemperature) {
-        client.send('/IrTemperature', objectTemperature.toFixed(4), ambientTemperature.toFixed(4));
-      });
-
-      tag.on('humidityChange', function (temperature, humidity) {
-        client.send('/humidity', temperature.toFixed(4), humidity.toFixed(4));
-      });
-
-      tag.on('barometricPressureChange', function (pressure) {
-        client.send('/pressure', pressure.toFixed(4));
-      });
-
-      tag.on('luxometerChange', function (lux) {
-        client.send('/luxometer', lux.toFixed(4));
-      });
-
-      tag.on('simpleKeyChange', function (left, right, reedRelay) {
-        client.send('/buttons', left.toNumber(), right.toNumber(), reedRelay.toNumber());
-      });
-      */
-
-      mainWindow.webContents.send('discovered', tag.id);
     });
   });
 

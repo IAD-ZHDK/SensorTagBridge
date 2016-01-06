@@ -24,7 +24,7 @@
         <h3>Discovered SensorTags: </h3>
         <div id="controller" ng-controller="myController">
           <div ng-repeat="tag in tags" class="tagListElement">
-            <span>{{tag.tagId}}</span>
+            <span>{{tag.tagSystemId}}</span>
             <button ng-click="connect(tag);" class="connectButton" ng-class="{'theConnectButton' : tag.notConnected}" type="button" ng-disabled="tag.notConnected && !tagNotConnected">{{tag.buttonText}}</button>
             <br>
           </div>
@@ -56,9 +56,9 @@
         //var tagNotConnected = true;
         //var connectButtonText = "Connect";
 
-        ipc.on("discovered", function(_, id){
+        ipc.on("discovered", function(_, id, systemID){
           console.log("receive discovered", id);
-          var onetag = {tagId:id, notConnected:true, buttonText:"Connect", buttonEnabled:true};
+          var onetag = {tagId:id, tagSystemId:systemID, notConnected:true, buttonText:"Connect", buttonEnabled:true};
           TAGS.push(onetag);
           angular.element(document.getElementById("controller")).scope().$apply(function(){});
         });
