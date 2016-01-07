@@ -5,6 +5,7 @@
   "scripts": {
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "package": "electron-packager ./ SensorTagBridge --platform=all --arch=all --out ~/Desktop/SensorTagBridge --version 0.35.4 --overwrite",
+    "package-darwin": "electron-packager ./ SensorTagBridge --platform=darwin --arch=all --out ~/Desktop/SensorTagBridge --version 0.35.4 --overwrite",
     "run": "./node_modules/.bin/electron ."
   },
   "dependencies": {
